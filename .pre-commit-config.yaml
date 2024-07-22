@@ -1,0 +1,37 @@
+fail_fast: true
+repos:
+- repo: https://github.com/asottile/pyupgrade
+  rev: v3.16.0
+  hooks:
+    - id: pyupgrade
+      args: [--py39-plus]
+      stages: [commit]
+      types: [file, python]
+- repo: https://github.com/adamchainz/django-upgrade
+  rev: 1.14.1
+  hooks:
+    - id: django-upgrade
+      name: django-upgrade
+      stages: [commit]
+      args: [--target-version, "4.2"]
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.5.4
+  hooks:
+    - id: ruff
+      name: ruff
+      stages: [ commit ]
+      types: [ file, python ]
+      args: ["--fix"]
+    - id: ruff-format
+      name: ruff
+      stages: [ commit ]
+      types: [ file, python ]
+      args: []
+
+- repo: local
+  hooks:
+    - id: message
+      name: Prepare commit message
+      language: system
+      entry: .hooks/prepare-commit-msg
+      stages: [prepare-commit-msg]
