@@ -7,5 +7,5 @@ from .constants import GROUPS
 
 @receiver(post_migrate)
 def init_groups(sender, **kwargs):
-    for group_id, group_name in GROUPS:
-        Group.objects.update_or_create(id=group_id, defaults={"name": group_name})
+    for group_name in GROUPS:
+        Group.objects.update_or_create(name=group_name)

@@ -1,9 +1,9 @@
-OWNER_GROUP = 1
-MANAGER_GROUP = 2
-AGENT_GROUP = 3
+GROUP_OWNERS = "Owners"
+GROUP_MANAGERS = "Managers"
+GROUP_AGENTS = "Agents"
 
 GROUPS = (
-    (OWNER_GROUP, "Owner"),
-    (MANAGER_GROUP, "Manager"),
-    (AGENT_GROUP, "Agent"),
+    GROUP_OWNERS,
+    GROUP_MANAGERS,
+    GROUP_AGENTS,
 )

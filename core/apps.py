@@ -6,4 +6,4 @@ class CoreConfig(AppConfig):
     name = "core"
 
     def ready(self):
-        pass  # NOQA: E501
+        from .signals import init_groups  # NOQA: F401
