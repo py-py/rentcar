@@ -1,0 +1,30 @@
+# Exclude a variety of commonly ignored directories.
+[tool.ruff]
+line-length = 99
+target-version = "py39"
+src = ["datatap"]
+exclude = [
+    ".git",
+    "*/migrations/*",
+    "*/vendored/*",
+    "node_modules/*",
+]
+
+lint.ignore = ["E721"]
+lint.extend-select = ["I001"]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+
+[format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
