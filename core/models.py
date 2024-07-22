@@ -15,6 +15,13 @@ class User(AbstractUser):
         error_messages={"unique": "A user with that username already exists."},
         verbose_name="Username",
     )
+    firebase_uid = models.CharField(
+        max_length=128,
+        unique=True,
+        null=True,
+        blank=True,
+        editable=False,
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
