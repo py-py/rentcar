@@ -17,6 +17,8 @@ class Vehicle(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="vehicles",
     )
+    make = models.CharField(max_length=32)
+    model = models.CharField(max_length=32)
     type = models.CharField(
         max_length=32,
         choices=VEHICLE_TYPES,
@@ -31,6 +33,7 @@ class Vehicle(TimeStampedModel):
         choices=PASSENGERS_TYPES,
         default=PASSENGERS_4,
     )
+    price = models.PositiveSmallIntegerField()
 
     class Meta:
         verbose_name = "Vehicle"
