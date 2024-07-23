@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "core",
     "vehicle",
+    "webapi",
 ]
 
 AUTH_USER_MODEL = "core.User"
