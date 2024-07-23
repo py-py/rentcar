@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 
 import firebase_admin
+import sentry_sdk
 from dotenv import load_dotenv
 from firebase_admin import credentials
 
@@ -148,3 +149,19 @@ REST_FRAMEWORK = {
 ##############################################################################
 creds = credentials.Certificate(os.getenv("SERVICE_ACCOUNT_KEY_PATH"))
 firebase_admin.initialize_app(creds)
+
+
+##############################################################################
+# SENTRY
+##############################################################################
+if not DEBUG and os.getenv("SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"),
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        traces_sample_rate=1 / 100,
+        # Set profiles_sample_rate to 1.0 to profile 100%
+        # of sampled transactions.
+        # We recommend adjusting this value in production.
+        profiles_sample_rate=1 / 100,
+    )

@@ -51,6 +51,7 @@ requests==2.32.3
 rsa==4.9
 ruff==0.5.4
 rules==3.4
+sentry-sdk==2.10.0
 sqlparse==0.5.1
 typing_extensions==4.12.2
 uritemplate==4.1.1
