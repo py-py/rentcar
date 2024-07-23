@@ -1,5 +1,5 @@
 """
-Django settings for rentcar project.
+Django settings for rentie project.
 
 """
 
@@ -59,7 +59,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "rentcar.urls"
+ROOT_URLCONF = "rentie.urls"
 
 TEMPLATES = [
     {
@@ -77,7 +77,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "rentcar.wsgi.application"
+WSGI_APPLICATION = "rentie.wsgi.application"
 
 
 # Database
