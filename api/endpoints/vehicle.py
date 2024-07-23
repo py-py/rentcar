@@ -20,10 +20,20 @@ class VehicleSerializer(serializers.ModelSerializer):
         )
 
 
-class VehicleViewSet(viewsets.ModelViewSet):
+class VehicleMixinViewSet:
+    queryset = Vehicle.objects.all()
+    serializer_class = VehicleSerializer
+    filterset_fields = ("make", "model", "type", "gearshift", "passengers")
+
+
+class VehicleInGarageViewSet(VehicleMixinViewSet, viewsets.ModelViewSet):
     queryset = Vehicle.objects.all()
     serializer_class = VehicleSerializer
     filterset_fields = ("make", "model", "type", "gearshift", "passengers")
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
+
+
+class VehicleViewSet(VehicleMixinViewSet, viewsets.ReadOnlyModelViewSet):
+    pass
