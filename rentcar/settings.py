@@ -38,9 +38,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
+    "sslserver",
+    "api",
     "core",
     "vehicle",
-    "webapi",
 ]
 
 AUTH_USER_MODEL = "core.User"
