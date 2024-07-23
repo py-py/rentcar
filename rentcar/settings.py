@@ -129,5 +129,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 ##############################################################################
 # FIREBASE
 ##############################################################################
-creds = credentials.Certificate("rentcar/serviceAccountKey.json")
+creds = credentials.Certificate(os.getenv("SERVICE_ACCOUNT_KEY_PATH"))
 firebase_admin.initialize_app(creds)
