@@ -24,7 +24,7 @@ class Vehicle(TimeStampedModel):
     brand = models.CharField(max_length=32)
     model = models.CharField(max_length=32)
     year_of_production = models.DateField(default=date(2020, 1, 1))
-    car_mileage = models.PositiveIntegerField()
+    car_mileage = models.PositiveIntegerField(default=1000)
     type = models.CharField(
         max_length=32,
         choices=TYPES,
@@ -46,7 +46,7 @@ class Vehicle(TimeStampedModel):
     )
     investor_daily_price = models.PositiveSmallIntegerField()
     manager_daily_price = models.PositiveSmallIntegerField()
-    post_service_duration = models.PositiveSmallIntegerField(default=120)
+    post_service_duration = models.PositiveSmallIntegerField(default=0)
 
     class Meta:
         verbose_name = "Vehicle"

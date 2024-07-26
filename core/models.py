@@ -3,6 +3,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
 from .managers import UserManager
+from .managers import UserQuerySet
 
 
 class User(AbstractUser):
@@ -28,4 +29,4 @@ class User(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    objects = UserManager()
+    objects = UserManager.from_queryset(UserQuerySet)()

@@ -1,10 +1,11 @@
+from core.models import User
 from rest_framework import serializers
 from rest_framework import viewsets
 from vehicle.models import Vehicle
 
 
 class VehicleSerializer(serializers.ModelSerializer):
-    investor = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    investor = serializers.PrimaryKeyRelatedField(queryset=User.objects.investors())
 
     class Meta:
         model = Vehicle
@@ -43,7 +44,7 @@ class VehicleInGarageViewSet(VehicleMixinViewSet, viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
 
     def get_queryset(self):
-        return super().get_queryset().filter(user=self.request.user)
+        return super().get_queryset().filter(investor=self.request.user)
 
 
 class VehicleViewSet(VehicleMixinViewSet, viewsets.ReadOnlyModelViewSet):

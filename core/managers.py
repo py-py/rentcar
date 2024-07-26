@@ -1,6 +1,22 @@
 from django.apps import apps
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import UserManager as DjangoUserManager
+from django.db import models
+
+from .constants import GROUP_AGENT
+from .constants import GROUP_INVESTOR
+from .constants import GROUP_MANAGER
+
+
+class UserQuerySet(models.QuerySet):
+    def investors(self):
+        return self.filter(groups__name=GROUP_INVESTOR)
+
+    def managers(self):
+        return self.filter(groups__name=GROUP_MANAGER)
+
+    def agents(self):
+        return self.filter(groups__name=GROUP_AGENT)
 
 
 class UserManager(DjangoUserManager):
