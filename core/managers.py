@@ -19,7 +19,7 @@ class UserQuerySet(models.QuerySet):
         return self.filter(groups__name=GROUP_AGENT)
 
 
-class UserManager(DjangoUserManager):
+class UserManager(DjangoUserManager.from_queryset(UserQuerySet)):
     def _create_user(self, username, email, password, **extra_fields):
         """
         Create and save a user with the given username, email, and password.

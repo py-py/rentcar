@@ -2,8 +2,9 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
+from .constants import GROUP_INVESTOR
+from .constants import GROUP_MANAGER
 from .managers import UserManager
-from .managers import UserQuerySet
 
 
 class User(AbstractUser):
@@ -29,4 +30,13 @@ class User(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    objects = UserManager.from_queryset(UserQuerySet)()
+    objects = UserManager()
+
+    def in_group(self, name):
+        return self.groups.filter(name__in=name).exists()
+
+    def is_investor(self):
+        return self.in_group(name=GROUP_INVESTOR)
+
+    def is_manager(self):
+        return self.in_group(name=GROUP_MANAGER)

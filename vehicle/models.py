@@ -21,6 +21,13 @@ class Vehicle(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="vehicles",
     )
+    manager = models.ForeignKey(
+        "core.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="managed_vehicles",
+    )
     brand = models.CharField(max_length=32)
     model = models.CharField(max_length=32)
     year_of_production = models.DateField(default=date(2020, 1, 1))
@@ -51,3 +58,12 @@ class Vehicle(TimeStampedModel):
     class Meta:
         verbose_name = "Vehicle"
         verbose_name_plural = "Vehicles"
+
+
+class VehicleImage(TimeStampedModel):
+    vehicle = models.ForeignKey(
+        "vehicle.Vehicle",
+        on_delete=models.CASCADE,
+        related_name="images",
+    )
+    image = models.FileField(upload_to="vehicles/")
