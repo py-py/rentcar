@@ -1,20 +1,25 @@
-VEHICLE_TYPE_SEDAN = "sedan"
-VEHICLE_TYPE_SUV = "suv"
-VEHICLE_TYPE_COUPE = "coupe"
+TYPE_SEDAN = "sedan"
+TYPE_SUV = "suv"
+TYPE_COUPE = "coupe"
+TYPES = (
+    (TYPE_SEDAN, "Sedan"),
+    (TYPE_SUV, "SUV"),
+    (TYPE_COUPE, "Couple"),
+)
 
-VEHICLE_TYPES = (
-    (VEHICLE_TYPE_SEDAN, "Sedan"),
-    (VEHICLE_TYPE_SUV, "SUV"),
-    (VEHICLE_TYPE_COUPE, "Couple"),
+FUEL_GAS = "gas"
+FUEL_DIESEL = "diesel"
+FUEL_TYPES = (
+    (FUEL_GAS, "Gas"),
+    (FUEL_DIESEL, "Diesel"),
 )
 
 
-GEARSHIFT_TYPE_AUTO = "auto"
-GEARSHIFT_TYPE_MANUAL = "manual"
-
-GEARSHIFT_TYPES = (
-    (GEARSHIFT_TYPE_AUTO, "Automatic"),
-    (GEARSHIFT_TYPE_MANUAL, "Manual"),
+TRANSMISSION_AUTO = "auto"
+TRANSMISSION_MANUAL = "manual"
+TRANSMISSION_TYPES = (
+    (TRANSMISSION_AUTO, "Automatic"),
+    (TRANSMISSION_MANUAL, "Manual"),
 )
 
 PASSENGERS_2 = 2

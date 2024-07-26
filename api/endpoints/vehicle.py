@@ -4,32 +4,43 @@ from vehicle.models import Vehicle
 
 
 class VehicleSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    investor = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Vehicle
         fields = (
             "id",
-            "user",
-            "make",
+            "investor",
+            "brand",
             "model",
+            "year_of_production",
+            "car_mileage",
             "type",
-            "gearshift",
+            "transmission_type",
+            "fuel_type",
             "passengers",
-            "price",
+            "investor_daily_price",
+            "manager_daily_price",
+            "post_service_duration",
         )
 
 
 class VehicleMixinViewSet:
     queryset = Vehicle.objects.all()
     serializer_class = VehicleSerializer
-    filterset_fields = ("make", "model", "type", "gearshift", "passengers")
+    filterset_fields = (
+        "brand",
+        "model",
+        "type",
+        "transmission_type",
+        "passengers",
+        "fuel_type",
+    )
 
 
 class VehicleInGarageViewSet(VehicleMixinViewSet, viewsets.ModelViewSet):
     queryset = Vehicle.objects.all()
     serializer_class = VehicleSerializer
-    filterset_fields = ("make", "model", "type", "gearshift", "passengers")
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
