@@ -15,7 +15,13 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "email", "groups")
+        fields = (
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "groups",
+        )
 
 
 class UserViewSet(viewsets.GenericViewSet):
