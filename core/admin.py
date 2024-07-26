@@ -17,8 +17,7 @@ class UserChangeForm(DjangoUserChangeForm):
 
 @admin.register(User, site=rentie_site)
 class UserAdmin(DjangoUserAdmin):
-    form = UserChangeForm
-    list_display = ("email", "first_name", "last_name", "is_staff")
+    list_display = ("email", "is_staff")
     fieldsets = (
         (
             None,
@@ -30,21 +29,13 @@ class UserAdmin(DjangoUserAdmin):
             },
         ),
         (
-            "Personal info",
-            {
-                "fields": (
-                    "first_name",
-                    "last_name",
-                )
-            },
-        ),
-        (
             "Permissions",
             {
                 "fields": ("groups",),
             },
         ),
     )
+    form = UserChangeForm
     add_fieldsets = (
         (
             None,
