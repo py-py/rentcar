@@ -168,3 +168,8 @@ if not DEBUG and os.getenv("SENTRY_DSN"):
         # We recommend adjusting this value in production.
         profiles_sample_rate=1 / 100,
     )
+
+UPLOADCARE = {
+    "pub_key": os.getenv("UPLOADCARE_PUBLIC_KEY"),
+    "secret": os.getenv("UPLOADCARE_SECRET_KEY"),
+}
