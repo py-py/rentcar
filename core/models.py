@@ -33,7 +33,7 @@ class User(AbstractUser):
     objects = UserManager()
 
     def in_group(self, name):
-        return self.groups.filter(name__in=name).exists()
+        return self.groups.filter(name=name).exists()
 
     def is_investor(self):
         return self.in_group(name=GROUP_INVESTOR)
