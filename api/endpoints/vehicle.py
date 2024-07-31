@@ -35,8 +35,9 @@ class VehicleSerializer(serializers.ModelSerializer):
             "investor_id",
             "investor_daily_price",
             "manager_daily_price",
-            "images",
             "post_service_duration",
+            "is_removed",
+            "images",
         )
 
 
@@ -53,7 +54,7 @@ class VehicleMixinViewSet:
 
 
 class VehicleInGarageViewSet(VehicleMixinViewSet, viewsets.ModelViewSet):
-    queryset = Vehicle.objects.all()
+    queryset = Vehicle.objects.available()
     serializer_class = VehicleSerializer
     permission_classes = [IsInvestor | IsManager]
 
@@ -65,6 +66,10 @@ class VehicleInGarageViewSet(VehicleMixinViewSet, viewsets.ModelViewSet):
             return queryset.filter(manager=self.request.user)
         else:
             return queryset.none()
+
+    def perform_destroy(self, instance: Vehicle):
+        instance.is_removed = True
+        instance.save(update_fields=("is_removed",))
 
 
 class VehicleViewSet(VehicleMixinViewSet, viewsets.ReadOnlyModelViewSet):

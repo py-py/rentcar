@@ -11,8 +11,7 @@ from .constants import TRANSMISSION_AUTO
 from .constants import TRANSMISSION_TYPES
 from .constants import TYPE_SEDAN
 from .constants import TYPES
-
-# Create your models here.
+from .querysets import VehicleQuerySet
 
 
 class Vehicle(TimeStampedModel):
@@ -54,6 +53,9 @@ class Vehicle(TimeStampedModel):
     investor_daily_price = models.PositiveSmallIntegerField()
     manager_daily_price = models.PositiveSmallIntegerField()
     post_service_duration = models.PositiveSmallIntegerField(default=0)
+    is_removed = models.BooleanField(default=False)
+
+    objects = models.Manager.from_queryset(VehicleQuerySet)()
 
     class Meta:
         verbose_name = "Vehicle"
