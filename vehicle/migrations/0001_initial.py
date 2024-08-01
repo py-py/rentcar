@@ -119,7 +119,12 @@ class Migration(migrations.Migration):
                         auto_now=True, verbose_name="modified"
                     ),
                 ),
-                ("image", models.FileField(upload_to="vehicles/")),
+                (
+                    "image",
+                    models.FileField(
+                        upload_to="vehicle-images/",
+                    ),
+                ),
                 (
                     "vehicle",
                     models.ForeignKey(

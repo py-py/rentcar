@@ -1,10 +1,26 @@
 from core.models import User
+from django.db.models import Q
 from rest_framework import serializers
 from rest_framework import viewsets
 from vehicle.models import Vehicle
+from vehicle.models import VehicleImage
 
 from api.permissions import IsInvestor
 from api.permissions import IsManager
+
+
+class VehicleImageSerializer(serializers.ModelSerializer):
+    vehicle_id = serializers.PrimaryKeyRelatedField(
+        queryset=Vehicle.objects.all(),
+        source="vehicle",
+    )
+
+    class Meta:
+        model = VehicleImage
+        fields = (
+            "vehicle_id",
+            "image",
+        )
 
 
 class VehicleSerializer(serializers.ModelSerializer):
@@ -18,6 +34,7 @@ class VehicleSerializer(serializers.ModelSerializer):
         queryset=User.objects.managers(),
         source="manager",
     )
+    images = VehicleImageSerializer(many=True)
 
     class Meta:
         model = Vehicle
@@ -42,7 +59,7 @@ class VehicleSerializer(serializers.ModelSerializer):
 
 
 class VehicleMixinViewSet:
-    queryset = Vehicle.objects.available()
+    queryset = Vehicle.objects.available().prefetch_related("images")
     serializer_class = VehicleSerializer
     filterset_fields = (
         "type",
@@ -73,3 +90,13 @@ class ManagedVehicleViewSet(VehicleMixinViewSet, viewsets.ModelViewSet):
 
 class VehicleViewSet(VehicleMixinViewSet, viewsets.ReadOnlyModelViewSet):
     pass
+
+
+class VehicleImageViewSet(viewsets.ModelViewSet):
+    queryset = VehicleImage.objects.prefetch_related("images")
+    serializer_class = VehicleImageSerializer
+    permission_classes = [IsInvestor | IsManager]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(Q(manager=self.request.user) | Q(owner=self.request.user))
