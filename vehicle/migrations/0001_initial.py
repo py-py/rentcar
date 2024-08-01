@@ -121,7 +121,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "image",
-                    models.FileField(
+                    models.ImageField(
                         upload_to="vehicle-images/",
                     ),
                 ),
