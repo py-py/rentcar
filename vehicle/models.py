@@ -68,4 +68,4 @@ class VehicleImage(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="images",
     )
-    image = models.FileField(upload_to="vehicle-images/")
+    image = models.ImageField(upload_to="vehicle-images/")
