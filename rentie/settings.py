@@ -10,26 +10,22 @@ import firebase_admin
 import sentry_sdk
 from dotenv import load_dotenv
 from firebase_admin import credentials
+from sentry_sdk.integrations.django import DjangoIntegration
 
 load_dotenv()  # take environment variables
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG") == "true"
+ENVIRONMENT = os.getenv("ENVIRONMENT")
+HOST = os.getenv("HOST")
 
-ALLOWED_HOSTS = []
-
-
-# Application definition
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -161,6 +157,8 @@ firebase_admin.initialize_app(creds)
 if not DEBUG and os.getenv("SENTRY_DSN"):
     sentry_sdk.init(
         dsn=os.getenv("SENTRY_DSN"),
+        integrations=[DjangoIntegration()],
+        environment=ENVIRONMENT,
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         traces_sample_rate=1 / 100,
@@ -169,6 +167,7 @@ if not DEBUG and os.getenv("SENTRY_DSN"):
         # We recommend adjusting this value in production.
         profiles_sample_rate=1 / 100,
     )
+    sentry_sdk.set_tag("site", HOST)
 
 UPLOADCARE = {
     "pub_key": os.getenv("UPLOADCARE_PUBLIC_KEY"),
