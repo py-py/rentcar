@@ -3,6 +3,7 @@ Django settings for rentie project.
 
 """
 
+import json
 import os
 from pathlib import Path
 
@@ -146,7 +147,9 @@ REST_FRAMEWORK = {
 ##############################################################################
 # FIREBASE
 ##############################################################################
-creds = credentials.Certificate(os.getenv("SERVICE_ACCOUNT_KEY_PATH"))
+cert = json.loads(os.getenv("GS_CREDENTIALS_JSON"))
+cert["private_key"] = cert["private_key"].replace("\\n", "\n")
+creds = credentials.Certificate(cert)
 firebase_admin.initialize_app(creds)
 
 
