@@ -1,5 +1,6 @@
 from core.models import User
 from django.db.models import Q
+from pyuploadcare.dj.client import get_uploadcare_client
 from rest_framework import serializers
 from rest_framework import viewsets
 from vehicle.models import Vehicle
@@ -9,11 +10,19 @@ from api.permissions import IsInvestor
 from api.permissions import IsManager
 
 
+class UploadCareImageField(serializers.ImageField):
+    def to_representation(self, value):
+        if not value:
+            return None
+        return value.cdn_url
+
+
 class VehicleImageSerializer(serializers.ModelSerializer):
     vehicle_id = serializers.PrimaryKeyRelatedField(
         queryset=Vehicle.objects.all(),
         source="vehicle",
     )
+    image = UploadCareImageField()
 
     class Meta:
         model = VehicleImage
@@ -21,6 +30,13 @@ class VehicleImageSerializer(serializers.ModelSerializer):
             "vehicle_id",
             "image",
         )
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        fd = attrs["image"]
+        client = get_uploadcare_client()
+        attrs["image"] = client.upload(fd, size=fd.size)
+        return attrs
 
 
 class VehicleSerializer(serializers.ModelSerializer):
