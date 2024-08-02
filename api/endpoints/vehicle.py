@@ -1,6 +1,8 @@
 from core.models import User
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import Q
 from pyuploadcare.dj.client import get_uploadcare_client
+from rest_framework import mixins
 from rest_framework import serializers
 from rest_framework import viewsets
 from vehicle.models import Vehicle
@@ -27,13 +29,14 @@ class VehicleImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = VehicleImage
         fields = (
+            "id",
             "vehicle_id",
             "image",
         )
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
-        fd = attrs["image"]
+        fd: InMemoryUploadedFile = attrs["image"]
         client = get_uploadcare_client()
         attrs["image"] = client.upload(fd, size=fd.size)
         return attrs
@@ -108,11 +111,15 @@ class VehicleViewSet(VehicleMixinViewSet, viewsets.ReadOnlyModelViewSet):
     pass
 
 
-class VehicleImageViewSet(viewsets.ModelViewSet):
-    queryset = VehicleImage.objects.prefetch_related("images")
+class VehicleImageViewSet(
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.ReadOnlyModelViewSet,
+):
+    queryset = VehicleImage.objects.select_related("vehicle")
     serializer_class = VehicleImageSerializer
     permission_classes = [IsInvestor | IsManager]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.filter(Q(manager=self.request.user) | Q(owner=self.request.user))
+        filters = Q(vehicle__investor=self.request.user) | Q(vehicle__manager=self.request.user)
+        return super().get_queryset().filter(filters)

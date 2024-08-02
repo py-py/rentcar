@@ -2,6 +2,7 @@ from datetime import date
 
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
+from pyuploadcare.dj.client import get_uploadcare_client
 from pyuploadcare.dj.models import ImageField
 
 from .constants import FUEL_GAS
@@ -70,3 +71,8 @@ class VehicleImage(TimeStampedModel):
         related_name="images",
     )
     image = ImageField()
+
+    def delete(self, *args, **kwargs):
+        client = get_uploadcare_client()
+        client.delete_files(files=[self.image])
+        super().delete(*args, **kwargs)
