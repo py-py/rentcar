@@ -47,6 +47,7 @@ AUTH_USER_MODEL = "core.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -132,6 +133,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 MEDIA_URL = "/media/"
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 CORS_ALLOW_ALL_ORIGINS = True
 
