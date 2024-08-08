@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "corsheaders",
+    "pyuploadcare.dj",
     "sslserver",
     "api",
     "core",
@@ -176,3 +177,8 @@ if not DEBUG and os.getenv("SENTRY_DSN"):
         profiles_sample_rate=1 / 100,
     )
     sentry_sdk.set_tag("site", HOST)
+
+UPLOADCARE = {
+    "pub_key": os.getenv("UPLOADCARE_PUBLIC_KEY"),
+    "secret": os.getenv("UPLOADCARE_SECRET_KEY"),
+}
