@@ -53,7 +53,7 @@ class VehicleSerializer(serializers.ModelSerializer):
         queryset=User.objects.managers(),
         source="manager",
     )
-    images = VehicleImageSerializer(many=True)
+    images = VehicleImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Vehicle
