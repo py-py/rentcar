@@ -1,5 +1,7 @@
+from django.urls import path
 from rest_framework import routers
 
+from .endpoints.healthcheck import HealthCheckAPIView
 from .endpoints.user import UserViewSet
 from .endpoints.vehicle import ManagedVehicleViewSet
 from .endpoints.vehicle import OwnedVehicleViewSet
@@ -13,4 +15,6 @@ router.register("vehicles", VehicleViewSet)
 router.register("vehicle-images", VehicleImageViewSet)
 router.register("users", UserViewSet)
 
-urlpatterns = router.urls
+urlpatterns = router.urls + [
+    path("healthcheck/", HealthCheckAPIView.as_view()),
+]
