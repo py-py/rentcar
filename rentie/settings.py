@@ -3,6 +3,7 @@ Django settings for rentie project.
 
 """
 
+import json
 import os
 from pathlib import Path
 
@@ -47,6 +48,7 @@ AUTH_USER_MODEL = "core.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -123,6 +125,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 STATIC_URL = "static/"
 
 # Default primary key field type
@@ -136,6 +139,10 @@ MEDIA_URL = "/media/"
 CORS_ALLOW_ALL_ORIGINS = True
 
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "api.authentication.FirebaseAuthentication",
+    ],
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
@@ -147,7 +154,9 @@ REST_FRAMEWORK = {
 ##############################################################################
 # FIREBASE
 ##############################################################################
-creds = credentials.Certificate(os.getenv("SERVICE_ACCOUNT_KEY_PATH"))
+cert = json.loads(os.getenv("GS_CREDENTIALS_JSON"))
+cert["private_key"] = cert["private_key"].replace("\\n", "\n")
+creds = credentials.Certificate(cert)
 firebase_admin.initialize_app(creds)
 
 
