@@ -57,6 +57,19 @@ class Vehicle(TimeStampedModel):
     post_service_duration = models.PositiveSmallIntegerField(default=0)
     is_removed = models.BooleanField(default=False)
 
+    country = models.ForeignKey(
+        "geo.Country",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    city = models.ForeignKey(
+        "geo.City",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
     objects = models.Manager.from_queryset(VehicleQuerySet)()
 
     class Meta:
