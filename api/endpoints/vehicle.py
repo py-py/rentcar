@@ -30,6 +30,7 @@ class VehicleImageSerializer(serializers.ModelSerializer):
         model = VehicleImage
         fields = (
             "id",
+            "uuid",
             "vehicle_id",
             "image",
         )
@@ -59,6 +60,7 @@ class VehicleSerializer(serializers.ModelSerializer):
         model = Vehicle
         fields = (
             "id",
+            "uuid",
             "brand",
             "model",
             "year_of_production",
