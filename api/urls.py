@@ -9,8 +9,8 @@ from .endpoints.vehicle import VehicleImageViewSet
 from .endpoints.vehicle import VehicleViewSet
 
 router = routers.SimpleRouter()
-router.register("owned/vehicles", OwnedVehicleViewSet, basename="owned-vehicles")
-router.register("managed/vehicles", ManagedVehicleViewSet, basename="managed-vehicles")
+router.register("vehicles/owned", OwnedVehicleViewSet, basename="vehicles-owned")
+router.register("vehicles/managed", ManagedVehicleViewSet, basename="vehicles-managed")
 router.register("vehicles", VehicleViewSet)
 router.register("images", VehicleImageViewSet)
 router.register("users", UserViewSet)
