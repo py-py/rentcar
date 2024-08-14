@@ -1,3 +1,4 @@
+import uuid
 from datetime import date
 
 from django.db import models
@@ -17,6 +18,7 @@ from .querysets import VehicleQuerySet
 
 
 class Vehicle(TimeStampedModel):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     investor = models.ForeignKey(
         "core.User",
         on_delete=models.CASCADE,
@@ -78,6 +80,7 @@ class Vehicle(TimeStampedModel):
 
 
 class VehicleImage(TimeStampedModel):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     vehicle = models.ForeignKey(
         "vehicle.Vehicle",
         on_delete=models.CASCADE,

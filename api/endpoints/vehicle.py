@@ -30,6 +30,7 @@ class VehicleImageSerializer(serializers.ModelSerializer):
         model = VehicleImage
         fields = (
             "id",
+            "uuid",
             "vehicle_id",
             "image",
         )
@@ -59,6 +60,7 @@ class VehicleSerializer(serializers.ModelSerializer):
         model = Vehicle
         fields = (
             "id",
+            "uuid",
             "brand",
             "model",
             "year_of_production",
@@ -114,7 +116,7 @@ class VehicleViewSet(VehicleMixinViewSet, viewsets.ReadOnlyModelViewSet):
 class VehicleImageViewSet(
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
-    viewsets.ReadOnlyModelViewSet,
+    viewsets.GenericViewSet,
 ):
     queryset = VehicleImage.objects.select_related("vehicle")
     serializer_class = VehicleImageSerializer
