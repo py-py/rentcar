@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from core.models import User
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import Q
@@ -9,6 +11,7 @@ from rest_framework import serializers
 from rest_framework import viewsets
 from vehicle.models import Vehicle
 from vehicle.models import VehicleImage
+from vehicle.models import VehicleOrder
 
 from api.permissions import IsInvestor
 from api.permissions import IsManager
@@ -45,6 +48,12 @@ class VehicleImageSerializer(serializers.ModelSerializer):
         return attrs
 
 
+class VehicleOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VehicleOrder
+        fields = ["id", "starts_at", "finishes_at"]
+
+
 class VehicleSerializer(serializers.ModelSerializer):
     investor_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.investors(),
@@ -69,6 +78,7 @@ class VehicleSerializer(serializers.ModelSerializer):
         queryset=City.objects.all(),
         source="city",
     )
+    orders = VehicleOrderSerializer(many=True, read_only=True)
 
     class Meta:
         model = Vehicle
@@ -89,9 +99,10 @@ class VehicleSerializer(serializers.ModelSerializer):
             "manager_daily_price",
             "post_service_duration",
             "is_removed",
-            "images",
             "country_id",
             "city_id",
+            "images",
+            "orders",
         )
 
 
@@ -143,3 +154,46 @@ class VehicleImageViewSet(
     def get_queryset(self):
         filters = Q(vehicle__investor=self.request.user) | Q(vehicle__manager=self.request.user)
         return super().get_queryset().filter(filters)
+
+
+class VehicleOrderSerializer(serializers.ModelSerializer):
+    vehicle_id = serializers.PrimaryKeyRelatedField(
+        allow_null=True,
+        required=False,
+        queryset=Vehicle.objects.available(),  # TODO: free in the selected time
+        source="vehicle",
+    )
+
+    class Meta:
+        model = VehicleOrder
+        fields = [
+            "id",
+            "uuid",
+            "vehicle_id",
+            "starts_at",
+            "finishes_at",
+            "client_name",
+            "client_phone",
+        ]
+
+    @staticmethod
+    def validate_starts_at(value: datetime):
+        return value.replace(minute=0, second=0, microsecond=0)
+
+    @staticmethod
+    def validate_finishes_at(value: datetime):
+        return value.replace(minute=0, second=0, microsecond=0)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        vehicle: Vehicle = attrs["vehicle"]
+        starts_at: datetime = attrs["starts_at"]
+        finishes_at: datetime = attrs["finishes_at"]
+        if vehicle.orders.filter(finishes_at__gte=starts_at, starts_at__lte=finishes_at).exists():
+            raise serializers.ValidationError({"vehicle": "The vehicle is busy."})
+        return attrs
+
+
+class VehicleOrderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = VehicleOrder.objects.all()
+    serializer_class = VehicleOrderSerializer
