@@ -7,13 +7,15 @@ from .constants import CURRENCY_EUR
 
 
 class Country(TimeStampedModel):
-    name = models.CharField(max_length=256, unique=True)
     code = CountryField(max_length=2, unique=True)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default=CURRENCY_EUR)
 
     class Meta:
         verbose_name = "Country"
         verbose_name_plural = "Countries"
+
+    def __str__(self):
+        return self.code.name
 
 
 class City(TimeStampedModel):

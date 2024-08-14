@@ -34,7 +34,6 @@ class Migration(migrations.Migration):
                         auto_now=True, verbose_name="modified"
                     ),
                 ),
-                ("name", models.CharField(max_length=256, unique=True)),
                 ("code", django_countries.fields.CountryField(max_length=2, unique=True)),
                 (
                     "currency",
