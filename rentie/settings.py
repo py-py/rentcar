@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "api",
     "core",
     "vehicle",
+    "geo",
 ]
 
 AUTH_USER_MODEL = "core.User"

@@ -1,6 +1,8 @@
 from core.models import User
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import Q
+from geo.models import City
+from geo.models import Country
 from pyuploadcare.dj.client import get_uploadcare_client
 from rest_framework import mixins
 from rest_framework import serializers
@@ -55,6 +57,18 @@ class VehicleSerializer(serializers.ModelSerializer):
         source="manager",
     )
     images = VehicleImageSerializer(many=True, read_only=True)
+    country_id = serializers.PrimaryKeyRelatedField(
+        allow_null=True,
+        required=False,
+        queryset=Country.objects.all(),
+        source="country",
+    )
+    city_id = serializers.PrimaryKeyRelatedField(
+        allow_null=True,
+        required=False,
+        queryset=City.objects.all(),
+        source="city",
+    )
 
     class Meta:
         model = Vehicle
@@ -76,6 +90,8 @@ class VehicleSerializer(serializers.ModelSerializer):
             "post_service_duration",
             "is_removed",
             "images",
+            "country_id",
+            "city_id",
         )
 
 
@@ -88,6 +104,8 @@ class VehicleMixinViewSet:
         "fuel_type",
         "passengers",
         "fuel_type",
+        "country",
+        "city",
     )
 
     def perform_destroy(self, instance: Vehicle):
