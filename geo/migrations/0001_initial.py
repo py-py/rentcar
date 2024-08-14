@@ -74,7 +74,9 @@ class Migration(migrations.Migration):
                 (
                     "country",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="geo.country"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="geo.country",
+                        related_name="cities",
                     ),
                 ),
             ],

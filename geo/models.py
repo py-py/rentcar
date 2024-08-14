@@ -23,7 +23,7 @@ class Country(TimeStampedModel):
 
 class City(TimeStampedModel):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="cities")
     name = models.CharField(max_length=256)
 
     class Meta:
