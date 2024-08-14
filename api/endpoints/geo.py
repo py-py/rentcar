@@ -13,9 +13,12 @@ class CountrySerializer(serializers.ModelSerializer):
 
 
 class CitySerializer(serializers.ModelSerializer):
+    country_id = serializers.ReadOnlyField(source="country.id")
+    country_code = serializers.ReadOnlyField(source="country.code.code")
+
     class Meta:
         model = City
-        fields = ("id", "uuid", "name")
+        fields = ("id", "uuid", "name", "country_id", "country_code")
 
 
 class CountryViewSet(viewsets.ReadOnlyModelViewSet):
