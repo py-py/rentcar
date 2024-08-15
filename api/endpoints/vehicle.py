@@ -15,8 +15,9 @@ from vehicle.models import Vehicle
 from vehicle.models import VehicleImage
 from vehicle.models import VehicleReservation
 
-from api.permissions import IsInvestor
-from api.permissions import IsManager
+from ..filters import VehicleFilterSet
+from ..permissions import IsInvestor
+from ..permissions import IsManager
 
 
 class UploadCareImageField(serializers.ImageField):
@@ -110,15 +111,7 @@ class VehicleSerializer(serializers.ModelSerializer):
 class VehicleMixinViewSet:
     queryset = Vehicle.objects.available().prefetch_related("images")
     serializer_class = VehicleSerializer
-    filterset_fields = (
-        "type",
-        "transmission_type",
-        "fuel_type",
-        "passengers",
-        "fuel_type",
-        "country",
-        "city",
-    )
+    filterset_class = VehicleFilterSet
 
     def perform_destroy(self, instance: Vehicle):
         instance.is_removed = True
