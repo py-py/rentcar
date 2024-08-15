@@ -11,7 +11,7 @@ from django.db import models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("geo", "0002_auto_20240815_1146"),
+        ("geo", "0001_initial"),
         ("vehicle", "0001_initial"),
     ]
 
