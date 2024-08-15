@@ -1,5 +1,3 @@
-import uuid
-
 from django.db import models
 from django_countries.fields import CountryField
 from django_extensions.db.models import TimeStampedModel
@@ -9,7 +7,6 @@ from .constants import CURRENCY_EUR
 
 
 class Country(TimeStampedModel):
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     code = CountryField(max_length=2, unique=True)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default=CURRENCY_EUR)
 
@@ -22,7 +19,6 @@ class Country(TimeStampedModel):
 
 
 class City(TimeStampedModel):
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="cities")
     name = models.CharField(max_length=256)
 
