@@ -9,7 +9,7 @@ class CountrySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Country
-        fields = ("id", "uuid", "code", "name", "currency")
+        fields = ("id", "code", "name", "currency")
 
 
 class CitySerializer(serializers.ModelSerializer):
@@ -17,7 +17,7 @@ class CitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = City
-        fields = ("id", "uuid", "name", "country")
+        fields = ("id", "name", "country")
 
 
 class CountryViewSet(viewsets.ReadOnlyModelViewSet):
