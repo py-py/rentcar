@@ -11,7 +11,7 @@ from rest_framework import serializers
 from rest_framework import viewsets
 from vehicle.models import Vehicle
 from vehicle.models import VehicleImage
-from vehicle.models import VehicleOrder
+from vehicle.models import VehicleReservation
 
 from api.permissions import IsInvestor
 from api.permissions import IsManager
@@ -50,7 +50,7 @@ class VehicleImageSerializer(serializers.ModelSerializer):
 
 class VehicleOrderSerializer(serializers.ModelSerializer):
     class Meta:
-        model = VehicleOrder
+        model = VehicleReservation
         fields = ["id", "starts_at", "finishes_at"]
 
 
@@ -165,7 +165,7 @@ class VehicleOrderSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = VehicleOrder
+        model = VehicleReservation
         fields = [
             "id",
             "uuid",
@@ -195,5 +195,5 @@ class VehicleOrderSerializer(serializers.ModelSerializer):
 
 
 class VehicleOrderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = VehicleOrder.objects.all()
+    queryset = VehicleReservation.objects.all()
     serializer_class = VehicleOrderSerializer
