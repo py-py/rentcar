@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "corsheaders",
+    "phonenumber_field",
     "pyuploadcare.dj",
     "sslserver",
     "api",

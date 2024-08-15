@@ -3,6 +3,7 @@ from datetime import date
 
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
+from phonenumber_field.modelfields import PhoneNumberField
 from pyuploadcare.dj.client import get_uploadcare_client
 from pyuploadcare.dj.models import ImageField
 
@@ -92,3 +93,20 @@ class VehicleImage(TimeStampedModel):
         client = get_uploadcare_client()
         client.delete_files(files=[self.image])
         super().delete(*args, **kwargs)
+
+
+class VehicleReservation(TimeStampedModel):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    vehicle = models.ForeignKey(
+        "vehicle.Vehicle",
+        on_delete=models.CASCADE,
+        related_name="reservations",
+    )
+    city = models.ForeignKey("geo.City", on_delete=models.SET_NULL, null=True)
+    starts_at = models.DateTimeField()
+    ends_at = models.DateTimeField()
+    daily_price = models.PositiveSmallIntegerField()
+
+    client_name = models.CharField(max_length=256)
+    client_phone = PhoneNumberField()
+    notes = models.TextField(null=True, blank=True)
