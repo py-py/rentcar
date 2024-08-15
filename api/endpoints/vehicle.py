@@ -9,6 +9,8 @@ from pyuploadcare.dj.client import get_uploadcare_client
 from rest_framework import mixins
 from rest_framework import serializers
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from vehicle.models import Vehicle
 from vehicle.models import VehicleImage
 from vehicle.models import VehicleReservation
@@ -48,10 +50,11 @@ class VehicleImageSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class VehicleOrderSerializer(serializers.ModelSerializer):
+# TODO: might be extend depend on the Agent/Manager/Owner
+class ReadVehicleReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = VehicleReservation
-        fields = ["id", "starts_at", "finishes_at"]
+        fields = ["id", "starts_at", "ends_at"]
 
 
 class VehicleSerializer(serializers.ModelSerializer):
@@ -78,7 +81,6 @@ class VehicleSerializer(serializers.ModelSerializer):
         queryset=City.objects.all(),
         source="city",
     )
-    orders = VehicleOrderSerializer(many=True, read_only=True)
 
     class Meta:
         model = Vehicle
@@ -102,7 +104,6 @@ class VehicleSerializer(serializers.ModelSerializer):
             "country_id",
             "city_id",
             "images",
-            "orders",
         )
 
 
@@ -123,6 +124,13 @@ class VehicleMixinViewSet:
         instance.is_removed = True
         instance.save(update_fields=("is_removed",))
 
+    @action(detail=True, serializer_class=ReadVehicleReservationSerializer)
+    def reservations(self, request, *args, **kwargs):
+        vehicle: Vehicle = self.get_object()
+        queryset = vehicle.reservations.order_by("starts_at")
+        serializer = ReadVehicleReservationSerializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 class OwnedVehicleViewSet(VehicleMixinViewSet, viewsets.ModelViewSet):
     permission_classes = [IsInvestor]
@@ -138,7 +146,7 @@ class ManagedVehicleViewSet(VehicleMixinViewSet, viewsets.ModelViewSet):
         return super().get_queryset().filter(manager=self.request.user)
 
 
-class VehicleViewSet(VehicleMixinViewSet, viewsets.ReadOnlyModelViewSet):
+class AgentVehicleViewSet(VehicleMixinViewSet, viewsets.ReadOnlyModelViewSet):
     pass
 
 
@@ -156,11 +164,11 @@ class VehicleImageViewSet(
         return super().get_queryset().filter(filters)
 
 
-class VehicleOrderSerializer(serializers.ModelSerializer):
+class CreateVehicleReservationSerializer(serializers.ModelSerializer):
     vehicle_id = serializers.PrimaryKeyRelatedField(
         allow_null=True,
         required=False,
-        queryset=Vehicle.objects.available(),  # TODO: free in the selected time
+        queryset=Vehicle.objects.available(),
         source="vehicle",
     )
 
@@ -168,12 +176,13 @@ class VehicleOrderSerializer(serializers.ModelSerializer):
         model = VehicleReservation
         fields = [
             "id",
-            "uuid",
             "vehicle_id",
             "starts_at",
-            "finishes_at",
+            "ends_at",
+            "daily_price",
             "client_name",
             "client_phone",
+            "notes",
         ]
 
     @staticmethod
@@ -181,19 +190,21 @@ class VehicleOrderSerializer(serializers.ModelSerializer):
         return value.replace(minute=0, second=0, microsecond=0)
 
     @staticmethod
-    def validate_finishes_at(value: datetime):
+    def validate_ends_at(value: datetime):
         return value.replace(minute=0, second=0, microsecond=0)
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
         vehicle: Vehicle = attrs["vehicle"]
-        starts_at: datetime = attrs["starts_at"]
-        finishes_at: datetime = attrs["finishes_at"]
-        if vehicle.orders.filter(finishes_at__gte=starts_at, starts_at__lte=finishes_at).exists():
-            raise serializers.ValidationError({"vehicle": "The vehicle is busy."})
+        if (
+            Vehicle.objects.filter(id=vehicle.id)
+            .reserved(starts_at=attrs["starts_at"], ends_at=attrs["ends_at"])
+            .exists()
+        ):
+            raise serializers.ValidationError({"vehicle": "The vehicle is busy at this time."})
         return attrs
 
 
-class VehicleOrderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class VehicleReservationViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = VehicleReservation.objects.all()
-    serializer_class = VehicleOrderSerializer
+    serializer_class = CreateVehicleReservationSerializer
