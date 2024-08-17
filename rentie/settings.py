@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "phonenumber_field",
     "pyuploadcare.dj",
+    "reversion",
     "sslserver",
     "api",
     "core",
