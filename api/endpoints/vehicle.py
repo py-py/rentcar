@@ -11,6 +11,8 @@ from rest_framework import serializers
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from reversion import create_revision
+from reversion import set_user
 from vehicle.models import Vehicle
 from vehicle.models import VehicleImage
 from vehicle.models import VehicleReservation
@@ -196,6 +198,12 @@ class CreateVehicleReservationSerializer(serializers.ModelSerializer):
         ):
             raise serializers.ValidationError({"vehicle": "The vehicle is busy at this time."})
         return attrs
+
+    def save(self, **kwargs):
+        request = self.context["request"]
+        with create_revision():
+            set_user(request.user)
+            return super().save(**kwargs)
 
 
 class VehicleReservationViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):

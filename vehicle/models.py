@@ -1,6 +1,7 @@
 import uuid
 from datetime import date
 
+import reversion
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
 from phonenumber_field.modelfields import PhoneNumberField
@@ -95,6 +96,7 @@ class VehicleImage(TimeStampedModel):
         super().delete(*args, **kwargs)
 
 
+@reversion.register()
 class VehicleReservation(TimeStampedModel):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     vehicle = models.ForeignKey(
