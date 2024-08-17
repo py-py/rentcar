@@ -25,3 +25,6 @@ class City(TimeStampedModel):
     class Meta:
         verbose_name = "City"
         verbose_name_plural = "Cities"
+
+    def __str__(self):
+        return f"{self.name} ({self.country.code.code})"
