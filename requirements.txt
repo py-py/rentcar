@@ -9,7 +9,7 @@ cfgv==3.4.0
 charset-normalizer==3.3.2
 cryptography==43.0.0
 distlib==0.3.8
-Django==3.2.25
+Django==4.2.15
 django-cors-headers==4.4.0
 django-countries==7.6.1
 django-extensions==3.2.3
