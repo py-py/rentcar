@@ -61,6 +61,10 @@ class Migration(migrations.Migration):
                         to="vehicle.vehicle",
                     ),
                 ),
+                (
+                    "is_cancelled",
+                    models.BooleanField(default=False),
+                ),
             ],
             options={
                 "verbose_name": "Reservation",

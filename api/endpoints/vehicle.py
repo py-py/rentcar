@@ -12,6 +12,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from reversion import create_revision
+from reversion import set_comment
 from reversion import set_user
 from vehicle.models import Vehicle
 from vehicle.models import VehicleImage
@@ -203,6 +204,7 @@ class CreateVehicleReservationSerializer(serializers.ModelSerializer):
         request = self.context["request"]
         with create_revision():
             set_user(request.user)
+            set_comment("...notes...")
             return super().save(**kwargs)
 
 

@@ -113,11 +113,12 @@ class VehicleReservation(TimeStampedModel):
     client_phone = PhoneNumberField()
     notes = models.TextField(null=True, blank=True)
 
+    is_cancelled = models.BooleanField(default=False)
+
     class Meta:
         verbose_name = "Reservation"
         verbose_name_plural = "Reservations"
 
     def __str__(self):
-        dt_format = "%Y-%m-%d %H:%M"
-        starts_at, ends_at = self.starts_at.strftime(dt_format), self.ends_at.strftime(dt_format)
-        return f"Vehicle #{self.vehicle.id} [{starts_at} - {ends_at}]"
+        starts_at, ends_at = self.starts_at.date(), self.ends_at.date()
+        return f"Vehicle #{self.vehicle.id} [{starts_at}:{ends_at}]"
