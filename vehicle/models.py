@@ -112,3 +112,12 @@ class VehicleReservation(TimeStampedModel):
     client_name = models.CharField(max_length=256)
     client_phone = PhoneNumberField()
     notes = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Reservation"
+        verbose_name_plural = "Reservations"
+
+    def __str__(self):
+        dt_format = "%Y-%m-%d %H:%M"
+        starts_at, ends_at = self.starts_at.strftime(dt_format), self.ends_at.strftime(dt_format)
+        return f"Vehicle #{self.vehicle.id} [{starts_at} - {ends_at}]"
