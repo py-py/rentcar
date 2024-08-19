@@ -10,12 +10,10 @@ class VehicleQuerySet(models.QuerySet):
 
     def reserved(self, starts_at, ends_at):
         return self.filter(
+            reservations__is_cancelled=False,
             reservations__ends_at__gte=starts_at,
             reservations__starts_at__lte=ends_at,
         )
 
     def unreserved(self, starts_at, ends_at):
-        return self.exclude(
-            reservations__ends_at__gte=starts_at,
-            reservations__starts_at__lte=ends_at,
-        )
+        return self.exclude(id__in=self.reserved(starts_at, ends_at))

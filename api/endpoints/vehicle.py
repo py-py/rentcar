@@ -123,7 +123,7 @@ class VehicleMixinViewSet:
     @action(detail=True, serializer_class=ReadVehicleReservationSerializer)
     def reservations(self, request, *args, **kwargs):
         vehicle: Vehicle = self.get_object()
-        queryset = vehicle.reservations.order_by("starts_at")
+        queryset = vehicle.reservations.filter(is_cancelled=False).order_by("starts_at")
         serializer = ReadVehicleReservationSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -233,7 +233,7 @@ class VehicleReservationViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = VehicleReservation.objects.all()
+    queryset = VehicleReservation.objects.filter(is_cancelled=False).select_related("vehicle")
     serializer_class = BaseVehicleReservationSerializer
     http_method_names = [
         "post",
