@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "pyuploadcare.dj",
     "rest_framework",
+    "reversion",
     "sslserver",
     "api",
     "core",
