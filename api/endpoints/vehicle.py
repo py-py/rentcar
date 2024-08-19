@@ -160,7 +160,7 @@ class VehicleImageViewSet(
         return super().get_queryset().filter(filters)
 
 
-class CreateVehicleReservationSerializer(serializers.ModelSerializer):
+class BaseVehicleReservationSerializer(serializers.ModelSerializer):
     vehicle_id = serializers.PrimaryKeyRelatedField(
         allow_null=True,
         required=False,
@@ -191,23 +191,69 @@ class CreateVehicleReservationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
-        vehicle: Vehicle = attrs["vehicle"]
-        if (
-            Vehicle.objects.filter(id=vehicle.id)
-            .reserved(starts_at=attrs["starts_at"], ends_at=attrs["ends_at"])
-            .exists()
-        ):
+        reservations = self.get_reservations(
+            vehicle=attrs["vehicle"],
+            starts_at=attrs["starts_at"],
+            ends_at=attrs["ends_at"],
+        )
+        if reservations.exists():
             raise serializers.ValidationError({"vehicle": "The vehicle is busy at this time."})
         return attrs
 
     def save(self, **kwargs):
         request = self.context["request"]
         with create_revision():
-            set_user(request.user)
-            set_comment("...notes...")
+            set_user(user=request.user)
+            set_comment(comment=self.get_revision_comment())
             return super().save(**kwargs)
 
+    def get_reservations(self, vehicle, starts_at, ends_at):
+        return Vehicle.objects.filter(id=vehicle.id).reserved(starts_at=starts_at, ends_at=ends_at)
 
-class VehicleReservationViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    def get_revision_comment(self):
+        return "Created a reservation."
+
+
+class CreateVehicleReservationSerializer(BaseVehicleReservationSerializer):
+    pass
+
+
+class UpdateVehicleReservationSerializer(BaseVehicleReservationSerializer):
+    def get_reservations(self, vehicle, starts_at, ends_at):
+        reservations = super().get_reservations(vehicle, starts_at, ends_at)
+        return reservations.exclude(reservations__id=self.instance.id)
+
+    def get_revision_comment(self):
+        return f"Updated {str(self.instance)}."
+
+
+class VehicleReservationViewSet(
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
     queryset = VehicleReservation.objects.all()
-    serializer_class = CreateVehicleReservationSerializer
+    serializer_class = BaseVehicleReservationSerializer
+    http_method_names = [
+        "post",
+        "put",
+        "delete",
+        "head",
+        "options",
+        "trace",
+    ]
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            self.serializer_class = CreateVehicleReservationSerializer
+        elif self.action == "update":
+            self.serializer_class = UpdateVehicleReservationSerializer
+        return super().get_serializer_class()
+
+    def perform_destroy(self, instance: VehicleReservation):
+        with create_revision():
+            set_user(self.request.user)
+            set_comment(f"Cancelled {str(instance)}")
+            instance.is_cancelled = True
+            instance.save(update_fields=("is_cancelled",))
