@@ -7,5 +7,5 @@ RUN pip install -r requirements.txt --no-cache-dir
 
 COPY . /app
 
-CMD python manage.py migrate && python3 manage.py collectstatic --noinput && gunicorn rentie.wsgi
+CMD python manage.py migrate && gunicorn rentie.wsgi
 
