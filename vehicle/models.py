@@ -99,19 +99,35 @@ class VehicleImage(TimeStampedModel):
 @reversion.register()
 class VehicleReservation(TimeStampedModel):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    creator = models.ForeignKey(
+        "core.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reservations",
+    )
     vehicle = models.ForeignKey(
         "vehicle.Vehicle",
         on_delete=models.CASCADE,
         related_name="reservations",
     )
-    city = models.ForeignKey("geo.City", on_delete=models.SET_NULL, null=True)
+    city = models.ForeignKey(
+        "geo.City",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="reservations",
+    )
+
     starts_at = models.DateTimeField()
     ends_at = models.DateTimeField()
-    daily_price = models.PositiveSmallIntegerField()
 
     client_name = models.CharField(max_length=256)
     client_phone = PhoneNumberField()
     notes = models.TextField(null=True, blank=True)
+
+    investor_daily_price = models.PositiveSmallIntegerField()
+    manager_daily_price = models.PositiveSmallIntegerField()
+    daily_price = models.PositiveSmallIntegerField()
 
     is_cancelled = models.BooleanField(default=False)
 

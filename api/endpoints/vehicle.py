@@ -56,9 +56,15 @@ class VehicleImageSerializer(serializers.ModelSerializer):
 
 # TODO: might be extend depend on the Agent/Manager/Owner
 class ReadVehicleReservationSerializer(serializers.ModelSerializer):
+    created_by_me = serializers.SerializerMethodField()
+
     class Meta:
         model = VehicleReservation
-        fields = ["id", "starts_at", "ends_at"]
+        fields = ["id", "created_by_me", "starts_at", "ends_at"]
+
+    def get_created_by_me(self, reservation: VehicleReservation):
+        request = self.context["request"]
+        return reservation.creator == request.user
 
 
 class VehicleSerializer(serializers.ModelSerializer):
@@ -124,7 +130,11 @@ class VehicleMixinViewSet:
     def reservations(self, request, *args, **kwargs):
         vehicle: Vehicle = self.get_object()
         queryset = vehicle.reservations.filter(is_cancelled=False).order_by("starts_at")
-        serializer = ReadVehicleReservationSerializer(queryset, many=True)
+        serializer = ReadVehicleReservationSerializer(
+            queryset,
+            many=True,
+            context=self.get_serializer_context(),
+        )
         return Response(serializer.data)
 
 
@@ -250,6 +260,19 @@ class VehicleReservationViewSet(
         elif self.action == "update":
             self.serializer_class = UpdateVehicleReservationSerializer
         return super().get_serializer_class()
+
+    def perform_create(self, serializer: CreateVehicleReservationSerializer):
+        vehicle: Vehicle = serializer.validated_data["vehicle"]
+        serializer.validated_data.update(
+            {
+                "creator": self.request.user,
+                "city": vehicle.city,
+                "investor_daily_price": vehicle.investor_daily_price,
+                "manager_daily_price": vehicle.manager_daily_price,
+            }
+        )
+        serializer.validated_data["creator"] = self.request.user
+        super().perform_create(serializer)
 
     def perform_destroy(self, instance: VehicleReservation):
         with create_revision():
