@@ -64,7 +64,7 @@ class ReadVehicleReservationSerializer(serializers.ModelSerializer):
 
     def get_created_by_me(self, reservation: VehicleReservation):
         request = self.context["request"]
-        return reservation.creator == request.user
+        return bool(request.user.is_authenticated and reservation.creator == request.user)
 
 
 class VehicleSerializer(serializers.ModelSerializer):
