@@ -201,13 +201,21 @@ class BaseVehicleReservationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
+        vehicle: Vehicle = attrs["vehicle"]
         reservations = self.get_reservations(
-            vehicle=attrs["vehicle"],
+            vehicle=vehicle,
             starts_at=attrs["starts_at"],
             ends_at=attrs["ends_at"],
         )
+
+        errors = {}
         if reservations.exists():
-            raise serializers.ValidationError({"vehicle": "The vehicle is busy at this time."})
+            errors["vehicle"] = "The vehicle is busy at this time."
+        if attrs["daily_price"] <= vehicle.manager_daily_price:
+            errors["daily_price"] = "The price is too low."
+        if errors:
+            raise serializers.ValidationError(errors)
+
         return attrs
 
     def save(self, **kwargs):
